@@ -20,6 +20,10 @@ io.on("connection", socket => {
     socket.on('disconnect', () => {
         console.log("user disconnected")
     })
+    socket.on('note:update', note => {
+        console.log("note updated", note)
+        socket.broadcast.emit('note:update', note)
+    })
 })
 
 httpServer.listen(5000, () => {
