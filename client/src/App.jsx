@@ -15,7 +15,7 @@ const App = () => {
     socket.emit('note:update', text)
     socket.on('note:update', note => setText(note))
     return () => socket.disconnect()
-  }, [text])
+  }, [text]) 
   return (
     <div>
       <h1>Live Notes</h1>
