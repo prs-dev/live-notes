@@ -20,9 +20,15 @@ io.on("connection", socket => {
     socket.on('disconnect', () => {
         console.log("user disconnected")
     })
-    socket.on('note:update', note => {
-        console.log("note updated", note)
-        socket.broadcast.emit('note:update', note)
+    socket.on('note:update', data => {
+        console.log("note updated", data.note)
+        socket.to(data.room).emit('note:update', data.note)
+    })
+    socket.on('room:join', room => {
+        socket.join(room)
+        console.log("user joined", room)
+        socket.emit("room:joined", socket.id)
+        // console.log(socket.rooms)
     })
 })
 
