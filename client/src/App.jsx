@@ -1,26 +1,28 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import {io} from 'socket.io-client'
 
 const App = () => {
   const [text, setText] = useState("")
+  const socket = useRef(null)
   useEffect(() => {
-    const socket = io('http://localhost:5000')
-    socket.on('connect', () => {
-      console.log("socket connected:", socket.id)
+    socket.current = io('http://localhost:5000')
+    socket.current.on('connect', () => {
+      console.log("socket connected:", socket.current.id)
     })
-    return () => socket.disconnect()
+    socket.current.on('note:update', note => setText(note))
+    return () => socket.current.disconnect()
   }, [])
-  useEffect(() => {
-    const socket = io('http://localhost:5000')
-    socket.emit('note:update', text)
-    socket.on('note:update', note => setText(note))
-    return () => socket.disconnect()
-  }, [text]) 
+
+  const handleChange = (e) => {
+    setText(e.target.value)
+    socket.current.emit('note:update', e.target.value)
+  }
+
   return (
     <div>
       <h1>Live Notes</h1>
       <div>
-        <textarea rows={10} cols={30} value={text} onChange={e => setText(e.target.value)}/>
+        <textarea rows={10} cols={30} value={text} onChange={handleChange}/>
       </div>
     </div>
   )
