@@ -30,6 +30,12 @@ io.on("connection", socket => {
         socket.emit("room:joined", socket.id)
         // console.log(socket.rooms)
     })
+    socket.on("room:users", async room => {
+        const sockets = await io.in(room).fetchSockets()
+        const ids = sockets.map(item => item.id)
+        io.to(room).emit("room:users", ids)
+        console.log("users", ids)
+    })
 })
 
 httpServer.listen(5000, () => {
